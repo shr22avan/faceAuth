@@ -29,6 +29,19 @@ using namespace std;
 using namespace boost::filesystem;
 using namespace cv;
 
+void split_s(vector<string> &result, string in, char delim) {
+	string temp;
+	int old = 0;
+	for(int i = 0; i < in.length(); i++) {
+		if(in[i] == delim) {
+			temp = in.substr(old, i - 1 - old + 1);
+			result.push_back(temp);
+			old = i+1;
+		}
+	}
+}
+
+map< string, string > uname_label_map;
 static void read_csv(const string& filename, vector<Mat>& images, vector<int>& labels, char separator = ';') {
 	std::ifstream file(filename.c_str(), ifstream::in);
 	if (!file) {
@@ -36,10 +49,15 @@ static void read_csv(const string& filename, vector<Mat>& images, vector<int>& l
 		CV_Error(CV_StsBadArg, error_message);
 	}
 	string line, path, classlabel;
+	vector<string> splits;
 	while (getline(file, line)) {
 		stringstream liness(line);
 		getline(liness, path, separator);
 		getline(liness, classlabel);
+		if(!splits.empty())
+			splits.clear();
+		split_s(splits, path, '/');
+		uname_label_map[classlabel] = splits[splits.size()-1];
 		if(!path.empty() && !classlabel.empty()) {
 			images.push_back(imread(path, 0));
 			labels.push_back(atoi(classlabel.c_str()));
@@ -86,6 +104,7 @@ int main(int argc, char *argv[]) {
 			e.set_msg(*(new string("Usage: face_recognizer <action_parameter> <value_parameter_list>")));
 			throw e;
 		}
+		//Ptr<FaceRecognizer> model = createLBPHFaceRecognizer();
 		Ptr<FaceRecognizer> model = createLBPHFaceRecognizer();
 		string action = argv[1];
 		if(action == "add") {
@@ -153,7 +172,8 @@ int main(int argc, char *argv[]) {
 			int label = -1;
 			double confidence = 0.0;
 			model -> predict(m, label, confidence);
-			cout << label << ":" << label << ":" << confidence  << endl;
+			cout << uname_label_map[to_string(label)];
+			cout << ":" << label << ":" << confidence  << endl;
 
 		}
 		else {
