@@ -16,6 +16,8 @@
 #ifndef IMAGE_DIRECTORY_PATH
 #define IMAGE_DIRECTORY_PATH "./images/"
 #endif
+using namespace std;
+using namespace boost::filesystem;
 
 struct s_exception {
 	
@@ -24,7 +26,7 @@ struct s_exception {
 
 	public:
 	
-	void set_msg(String e) {
+	void set_msg(string e) {
 		msg = e;
 	}
 
@@ -34,35 +36,35 @@ struct s_exception {
 
 } e;
 
-using namespace std;
-using namespace boost::filesystem;
 
 int main(int argc, char *argv[]) {
-	if(argc < 3) {
-		cerr << "Usage: face_recognizer <action_parameter> <value_parameter_list>\n";
-		return 1;
-	}
-	string action = argv[1], value = argv[2];
-	if(action == "add") {
-		/* Need Username and the current image location */
-		if(argc != 4) {
-			e.set_msg(new string("Invalid Arguments. Usage: face_recognizer add <username> <image_location>"));
+	try {
+		if(argc < 3) {
+			e.set_msg(*(new string("Usage: face_recognizer <action_parameter> <value_parameter_list>")));
 			throw e;
 		}
-		string username = argv[2], img = argv[3];
-		path p(IMAGE_DIRECTORY_PATH + username);
-		if( ! exists(p) ) {
+		string action = argv[1], value = argv[2];
+		if(action == "add") {
+			/* Need Username and the current image location */
+			if(argc != 4) {
+				e.set_msg(*(new string("Invalid Arguments. Usage: face_recognizer add <username> <image_location>")));
+				throw e;
+			}
+			string username = argv[2], img = argv[3];
+			path p(IMAGE_DIRECTORY_PATH + username);
+			if( ! exists(p) ) {
+			}
 		}
-	}
-	else if(action == "detect") {
-		/* Need Username and the test image */
-		if(argc != 4) {
-			e.set_msg(new string("Invalid Arguments. Usage: face_recognizer detect <username> <test_image_location>"));
-			throw e;
+		else if(action == "detect") {
+			/* Need Username and the test image */
+			if(argc != 4) {
+				e.set_msg(*(new string("Invalid Arguments. Usage: face_recognizer detect <username> <test_image_location>")));
+				throw e;
+			}
 		}
-	}
-	else {
-		;
+		else {
+			;
+		}
 	}
 	catch (s_exception t) {
 		cerr << t.get_msg() << endl;
