@@ -14,11 +14,11 @@
 #include "opencv2/highgui/highgui.hpp"
 
 #ifndef CSV_PATH 
-#define CSV_PATH "./images.csv" 
+#define CSV_PATH "images.csv" 
 #endif
 
 #ifndef IMAGE_DIRECTORY_PATH
-#define IMAGE_DIRECTORY_PATH "./images/"
+#define IMAGE_DIRECTORY_PATH "images/"
 #endif
 
 #ifndef IMAGE_FILE_EXTENSION
@@ -77,17 +77,17 @@ string to_string (int a) {
 		b += (st.top() + '0');
 		st.pop();
 	}
-
+	return b;
 }
 
 int main(int argc, char *argv[]) {
 	try {
-		Ptr<FaceRecognizer> model = createLBPHFaceRecognizer();
 		if(argc < 3) {
 			e.set_msg(*(new string("Usage: face_recognizer <action_parameter> <value_parameter_list>")));
 			throw e;
 		}
-		string action = argv[1], value = argv[2];
+		Ptr<FaceRecognizer> model = createLBPHFaceRecognizer();
+		string action = argv[1];
 		if(action == "add") {
 
 			/* Need Username and the current image location */
@@ -127,7 +127,6 @@ int main(int argc, char *argv[]) {
 
 			//Build the CSV file:
 			system("python csv_create.py images");
-
 		}
 		else if(action == "detect") {
 			
@@ -135,7 +134,6 @@ int main(int argc, char *argv[]) {
 			vector<int> labels;
 			
 			read_csv(CSV_PATH, images, labels);
-			
 			if(images.size() <= 1) {
 				string error_message = "This demo needs at least 2 images to work. Please add more images to your data set!";
 				CV_Error(CV_StsError, error_message);
@@ -151,10 +149,11 @@ int main(int argc, char *argv[]) {
 			}
 
 			string uname = argv[2], img = argv[3];
-			path i(*(new string(img)));
-
-			int predictedLabel = model -> predict(imread(img, 0));
-			cout << predictedLabel << endl;
+			Mat m = imread(argv[3], 0);
+			int label = -1;
+			double confidence = 0.0;
+			model -> predict(m, label, confidence);
+			cout << label << ":" << label << ":" << confidence  << endl;
 
 		}
 		else {

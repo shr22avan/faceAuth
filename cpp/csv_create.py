@@ -41,3 +41,4 @@ if __name__ == "__main__":
 				abs_path = "%s/%s" % (subject_path, filename)		    
 				f.write ("%s%s%d\n" % (abs_path, SEPARATOR, label))
 			label = label + 1
+	exit(0)
