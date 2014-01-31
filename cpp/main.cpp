@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <stack>
 #include <sys/stat.h>
 #include <iterator>
 #include <boost/filesystem.hpp>
@@ -42,6 +43,21 @@ struct s_exception {
 
 } e;
 
+string to_string (int a) {
+
+	stack <int> st;
+	do {
+		st.push( a % 10 );
+		a /= 10;
+	}
+	while(a);
+	string b = "";
+	while( ! st.empty() ){ 
+		b += (st.top() + '0');
+		st.pop();
+	}
+
+}
 
 int main(int argc, char *argv[]) {
 	try {
