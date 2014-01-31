@@ -1,1 +1,2 @@
-g++ main.cpp -lboost_filesystem -lboost_system
+ g++ main.cpp -lboost_filesystem -lboost_system -lopencv_highgui -lopenc
+v_core -lopencv_contrib
