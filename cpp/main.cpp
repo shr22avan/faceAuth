@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string>
+#include <vector>
 #include <sys/stat.h>
 #include <iterator>
 #include <boost/filesystem.hpp>
@@ -16,6 +17,11 @@
 #ifndef IMAGE_DIRECTORY_PATH
 #define IMAGE_DIRECTORY_PATH "./images/"
 #endif
+
+#ifndef IMAGE_FILE_EXTENSION
+#define IMAGE_FILE_EXTENSION "jpg"
+#endif
+
 using namespace std;
 using namespace boost::filesystem;
 
@@ -51,9 +57,35 @@ int main(int argc, char *argv[]) {
 				throw e;
 			}
 			string username = argv[2], img = argv[3];
-			path p(IMAGE_DIRECTORY_PATH + username);
-			if( ! exists(p) ) {
+			path q(IMAGE_DIRECTORY_PATH);
+			if( ! exists(q) ) {
+				e.set_msg(*(new string("Invalid Location. There is no image repository here.")));
+				throw e;
 			}
+			path p(IMAGE_DIRECTORY_PATH + username), r(img);
+			if( ! exists(p) ) {
+				create_directory(p);		
+			}
+
+			directory_iterator end_iter, start_iter(p);
+			vector<path> image_paths;
+			
+			//Getting the paths of all the images corresponding to the given username.
+			while(start_iter != end_iter) {
+				image_paths.push_back(start_iter->path());	
+				start_iter++;
+			}
+			
+			//Copying the new image to the images repository
+			string destination = IMAGE_DIRECTORY_PATH + username + "/" + to_string(image_paths.size() + 1) + "." + IMAGE_FILE_EXTENSION;
+			path s(destination);
+			copy_file(r, s); 
+
+			//deleting the old file - commented out because, it maybe needed in the UI.
+			//remove(r);
+			image_paths.push_back(s);
+
+			//Rebuild the CSV file:
 		}
 		else if(action == "detect") {
 			/* Need Username and the test image */
